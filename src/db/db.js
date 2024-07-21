@@ -4,16 +4,16 @@ import { DB_NAME } from "../constant.js";
 
 const connectDB = async () => {
   try {
-    mongoose.connection.on("connected", () => {
-      console.log("Mongodb Connected Successfully");
+    mongoose.connection.on(`connected`, () => {
+      console.log(`Mongodb Connected Successfully`);
     });
-    mongoose.connection.on("disconnected", () => {
-      console.log("Mongodb Disconnected While Checking...");
+    mongoose.connection.on(`disconnected`, () => {
+      console.log(`Mongodb Disconnected While Checking...`);
     });
-    mongoose.connection.on("error", (error) => {
+    mongoose.connection.on(`error`, (error) => {
       console.log(`Mongodb Connection Error ${error}`);
     });
-    await mongoose.connect(config.MONGODB_URI + "/" + DB_NAME);
+    await mongoose.connect(`${config.MONGODB_URI}/${DB_NAME}`);
   } catch (error) {
     console.log(`Mongodb Connection Failed ${error}`);
     process.exit(1);
