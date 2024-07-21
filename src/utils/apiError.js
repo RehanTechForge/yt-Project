@@ -16,3 +16,4 @@ class ApiError extends Error {
     config.ENV === "development" ? (this.stack = stack) : (stack = "");
   }
 }
+export default ApiError;
