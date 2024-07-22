@@ -12,4 +12,10 @@ const URL_LIMIT = {
   limit: "16kb",
   extended: true,
 };
-export { DB_NAME, CORS_OPTIONS, JSON_LIMIT, URL_LIMIT };
+
+const COOKIE_OPTIONS = {
+  http: true,
+  secure: true,
+};
+
+export { DB_NAME, CORS_OPTIONS, JSON_LIMIT, URL_LIMIT, COOKIE_OPTIONS };
