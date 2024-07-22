@@ -139,4 +139,24 @@ const loginUser = asyncHandler(async (req, res, next) => {
     );
 });
 
-export { healthCheck, registerUser, loginUser };
+const logoutUser = asyncHandler(async (req, res, next) => {
+  User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $unset: {
+        refreshToken: 1, // this removes the field from document
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", COOKIE_OPTIONS)
+    .clearCookie("refreshToken", COOKIE_OPTIONS)
+    .json(new ApiResponse(200, {}, "User logged Out"));
+});
+
+export { healthCheck, registerUser, loginUser, logoutUser };
