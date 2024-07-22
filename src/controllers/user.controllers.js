@@ -139,4 +139,4 @@ const loginUser = asyncHandler(async (req, res, next) => {
     );
 });
 
-export { healthCheck, registerUser };
+export { healthCheck, registerUser, loginUser };
