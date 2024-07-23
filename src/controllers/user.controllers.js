@@ -203,4 +203,50 @@ const refreshAccessToken = asyncHandler(async (req, res, next) => {
     );
 });
 
-export { healthCheck, registerUser, loginUser, logoutUser, refreshAccessToken };
+const changeCurrentPassword = asyncHandler(async (req, res, next) => {
+  const { oldPassword, newPassword, confPassword } = req.body;
+
+  const user = await User.findById(req.user?._id);
+  if (!user) {
+    return res.status(401).json(new ApiError(401, null, "User Not Found"));
+  }
+
+  const isPasswordCorrect = await user.isComparePassword(oldPassword);
+
+  if (!isPasswordCorrect) {
+    return res
+      .status(401)
+      .json(new ApiError(401, null, "Password Are Incorrect"));
+  }
+
+  if (newPassword !== confPassword) {
+    return res
+      .status(401)
+      .json(new ApiError(401, null, "Please Check Your Password"));
+  }
+
+  await User.findByIdAndUpdate(
+    user._id,
+    {
+      $set: {
+        password: newPassword,
+      },
+    },
+    {
+      new: true,
+    }
+  ).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password Change SuccessFully"));
+});
+
+export {
+  healthCheck,
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  changeCurrentPassword,
+};
