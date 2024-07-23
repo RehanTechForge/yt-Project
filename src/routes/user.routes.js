@@ -9,6 +9,7 @@ import {
   refreshAccessToken,
   registerUser,
   updateAvatar,
+  updateCoverImage,
   updateUserAccountDetails,
 } from "../controllers/user.controllers.js";
 import verifyJWT from "../middlewares/auth.middleware.js";
@@ -37,5 +38,8 @@ router.route("/update-user-details").post(verifyJWT, updateUserAccountDetails);
 router
   .route("/update-avatar")
   .post(verifyJWT, upload.single("avatar"), updateAvatar);
+router
+  .route("/update-cover-image")
+  .post(verifyJWT, upload.single("coverImage"), updateCoverImage);
 
 export default router;
