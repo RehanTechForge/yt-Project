@@ -344,6 +344,74 @@ const updateAvatar = asyncHandler(async (req, res, next) => {
     .json(new ApiResponse(200, updatedUser, "User Updated SuccessFully"));
 });
 
+const updateCoverImage = asyncHandler(async (req, res, next) => {
+  // yt/ykoov9zdlgfuy5okq1xc
+  // avatar: 'http://res.cloudinary.com/dcv8lgm8s/image/upload/v1721556193/yt/cqp2yyx6jwr99k4thgsz.png',
+  // coverImage: 'http://res.cloudinary.com/dcv8lgm8s/image/upload/v1721556194/yt/ykoov9zdlgfuy5okq1xc.png',
+  const user = await User.findById(req.user?._id);
+  if (!user) {
+    return res.status(401).json(new ApiError(401, null, "User Not Found"));
+  }
+
+  const coverImageLocalPath = req.file?.path;
+
+  if (!coverImageLocalPath) {
+    return res.status(401).json(new ApiError(401, null, "CoverImage Not Provided"));
+  }
+
+  const coverImagePublicId =
+    user.avatar.split("/").at(-2) +
+    "/" +
+    user.avatar.split("/").at(-1).split(".").at(-2);
+
+  const response = await deleteOnCloudinary(coverImagePublicId);
+
+  if (response.result !== "ok") {
+    return res
+      .status(501)
+      .json(
+        new ApiError(501, null, "Previous CoverImage Not Delete On Cloudinary")
+      );
+  }
+
+  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+
+  if (!coverImage) {
+    return res
+      .status(501)
+      .json(new ApiError(501, null, "Avatar Not Uploaded On Cloudinary"));
+  }
+
+  // user.avatar = avatar.url;
+  // await user.save({ validateBeforeSave: false });
+
+  // const updatedUser = await User.findById(user._id).select(
+  //   "-password -refreshToken"
+  // );
+
+  const updatedUser = await User.findByIdAndUpdate(
+    user._id,
+    {
+      $set: {
+        coverImage: coverImage.url,
+      },
+    },
+    {
+      new: true,
+    }
+  ).select("-password -refreshToken");
+
+  if (!updatedUser) {
+    return res
+      .status(501)
+      .json(new ApiError(501, null, "User Not Updated In Our DB"));
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedUser, "User Updated SuccessFully"));
+});
+
 export {
   healthCheck,
   registerUser,
@@ -354,4 +422,5 @@ export {
   getCurrentUser,
   updateUserAccountDetails,
   updateAvatar,
+  updateCoverImage,
 };
